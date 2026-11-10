@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Spares 'n Money</title>
+  <meta name="description" content="Gestisci risparmi e stipendi in modo semplice.">
+  <meta name="theme-color" content="#0f766e">
+
+  <!-- PWA / iOS -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Spares">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app">
+    <header class="top">
+      <h1>Spares <span>'n</span> Money</h1>
+    </header>
+
+    <section class="balance-card" aria-live="polite">
+      <p class="label">Totale disponibile</p>
+      <p class="balance" id="balance">0,00 €</p>
+      <div class="stats">
+        <div>
+          <span class="dot in"></span>
+          <span class="stat-label">Entrate</span>
+          <strong id="total-in">0,00 €</strong>
+        </div>
+        <div>
+          <span class="dot out"></span>
+          <span class="stat-label">Spese</span>
+          <strong id="total-out">0,00 €</strong>
+        </div>
+      </div>
+    </section>
+
+    <div class="actions">
+      <button class="btn btn-in" id="open-in" type="button">
+        <span aria-hidden="true">＋</span> Aggiungi
+      </button>
+      <button class="btn btn-out" id="open-out" type="button">
+        <span aria-hidden="true">−</span> Sottrai
+      </button>
+    </div>
+
+    <section class="history">
+      <h2>Movimenti</h2>
+      <ul id="list" class="list"></ul>
+      <p id="empty" class="empty">Nessun movimento ancora.<br>Inizia aggiungendo il tuo primo stipendio.</p>
+    </section>
+  </main>
+
+  <!-- Form aggiunta / spesa -->
+  <dialog id="dialog" class="sheet">
+    <form id="form" method="dialog" novalidate>
+      <h3 id="form-title">Aggiungi denaro</h3>
+
+      <label class="field">
+        <span>Importo (€)</span>
+        <input id="amount" name="amount" type="text" inputmode="decimal"
+               placeholder="0,00" autocomplete="off" required>
+      </label>
+
+      <label class="field">
+        <span id="desc-label">Descrizione <em>(facoltativa)</em></span>
+        <input id="description" name="description" type="text" maxlength="80"
+               placeholder="Es. Stipendio" autocomplete="off">
+      </label>
+
+      <div class="row">
+        <label class="field">
+          <span id="month-label">Mese</span>
+          <select id="month" name="month"></select>
+        </label>
+        <label class="field">
+          <span id="year-label">Anno</span>
+          <input id="year" name="year" type="number" inputmode="numeric"
+                 min="1900" max="2100" placeholder="AAAA">
+        </label>
+      </div>
+
+      <p id="error" class="error" role="alert"></p>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-ghost" id="cancel">Annulla</button>
+        <button type="submit" class="btn btn-in" id="submit">Salva</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
