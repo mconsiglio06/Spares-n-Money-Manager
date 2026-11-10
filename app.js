@@ -64,6 +64,7 @@ const categoryName = (id) => categories.find((c) => c.id === id)?.name || '';
 function totals() {
   let income = 0, expense = 0, debtOpen = 0, debtCount = 0;
   for (const t of transactions) {
+    if (t.ignored) continue; // le transazioni trascurate restano solo in cronologia
     if (t.type === 'in') income += t.amount;
     else if (t.type === 'out') expense += t.amount;
     else if (t.type === 'debt' && !t.settled) { debtOpen += t.amount; debtCount++; }
@@ -102,7 +103,7 @@ const els = {
   newCatRow: $('new-cat-row'), newCat: $('new-cat'),
   month: $('month'), monthLabel: $('month-label'),
   year: $('year'), yearLabel: $('year-label'),
-  settled: $('settled'), settledField: $('settled-field'),
+  settled: $('settled'), settledField: $('settled-field'), ignored: $('ignored'),
   error: $('error'), submit: $('submit'),
 };
 
@@ -135,7 +136,7 @@ function el(tag, className, text) {
 }
 
 function renderItem(t) {
-  const li = el('li', `item ${t.type}${t.type === 'debt' && t.settled ? ' settled' : ''}`);
+  const li = el('li', `item ${t.type}${t.type === 'debt' && t.settled ? ' settled' : ''}${t.ignored ? ' ignored' : ''}`);
 
   const icon = el('div', 'icon', t.type === 'in' ? '+' : t.type === 'out' ? '−' : '↺');
 
@@ -151,18 +152,19 @@ function renderItem(t) {
   if (t.type === 'in' && t.kind && t.kind !== 'generic' && t.description) {
     meta.append(el('span', 'badge kind', KIND_LABEL[t.kind]));
   }
-  if (t.type === 'debt') {
+  if (t.type === 'debt' && !t.ignored) {
     meta.append(el('span', `badge ${t.settled ? 'ok' : 'debt'}`, t.settled ? 'Rientrato' : 'Da rientrare'));
   }
   const cat = categoryName(t.category);
   if (cat) meta.append(el('span', 'badge cat', cat));
+  if (t.ignored) meta.append(el('span', 'badge ignored', 'Trascurata'));
   info.append(meta);
 
   const sign = t.type === 'in' ? '+ ' : t.type === 'out' ? '− ' : t.settled ? '' : '− ';
   const amount = el('div', 'amount', sign + fmt(t.amount));
 
   const tools = el('div', 'tools');
-  if (t.type === 'debt') {
+  if (t.type === 'debt' && !t.ignored) {
     const settle = el('button', 'tool settle', t.settled ? '↩' : '✓');
     settle.type = 'button';
     const label = t.settled ? 'Segna come non rientrato' : 'Segna come rientrato';
@@ -404,6 +406,7 @@ function openForm(type, existing = null) {
     els.month.value = existing.month ? String(existing.month) : '';
     els.year.value = existing.year ? String(existing.year) : '';
     els.settled.checked = !!existing.settled;
+    els.ignored.checked = !!existing.ignored;
   } else {
     els.kind.value = 'stipendio';
     // Per le entrate precompila il mese/anno correnti (modificabili).
@@ -460,6 +463,7 @@ els.form.addEventListener('submit', (e) => {
   const data = {
     amount, description, month, year, category,
     kind: mode === 'in' ? els.kind.value : null,
+    ignored: els.ignored.checked,
   };
 
   if (editingId) {
@@ -520,7 +524,7 @@ function expenseMonth(t) {
 
 function buildPeriodOptions() {
   const years = new Set();
-  for (const t of transactions) if (t.type === 'out') years.add(expenseMonth(t).y);
+  for (const t of transactions) if (t.type === 'out' && !t.ignored) years.add(expenseMonth(t).y);
   const current = periodSelect.value || 'last12';
   const opts = [new Option('Ultimi 12 mesi', 'last12')];
   [...years].sort((a, b) => b - a).forEach((y) => opts.push(new Option(`Anno ${y}`, String(y))));
@@ -543,7 +547,7 @@ function renderCharts() {
       months.push({ y: d.getFullYear(), m: d.getMonth() + 1 });
     }
   } else if (period === 'all') {
-    const keys = transactions.filter((t) => t.type === 'out' && expenseMonth(t).m)
+    const keys = transactions.filter((t) => t.type === 'out' && !t.ignored && expenseMonth(t).m)
       .map((t) => { const e = expenseMonth(t); return e.y * 12 + e.m - 1; });
     if (keys.length) {
       const min = Math.min(...keys), max = Math.max(...keys, now.getFullYear() * 12 + now.getMonth());
@@ -560,7 +564,7 @@ function renderCharts() {
     return e.y === Number(period);
   };
 
-  const expenses = transactions.filter((t) => t.type === 'out' && inPeriod(expenseMonth(t)));
+  const expenses = transactions.filter((t) => t.type === 'out' && !t.ignored && inPeriod(expenseMonth(t)));
   const total = expenses.reduce((s, t) => s + t.amount, 0);
   const noMonth = expenses.filter((t) => !expenseMonth(t).m);
 

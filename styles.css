@@ -407,7 +407,14 @@ body {
 .row { display: grid; grid-template-columns: 1.4fr 1fr; gap: 12px; }
 .new-cat { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
 .check { display: flex; align-items: center; gap: 10px; font-size: 0.95rem; cursor: pointer; }
-.check input { width: 20px; height: 20px; accent-color: var(--in); }
+.check input { width: 20px; height: 20px; accent-color: var(--in); flex: none; }
+.check.ignore { align-items: flex-start; }
+.check.ignore input { margin-top: 2px; accent-color: var(--muted); }
+.check small { display: block; font-size: 0.8rem; color: var(--muted); }
+/* Transazioni trascurate: visibili ma "spente" */
+.item.ignored .icon, .item.ignored .title, .item.ignored .date { opacity: 0.5; }
+.item.ignored .amount { color: var(--muted) !important; text-decoration: line-through; }
+.badge.ignored { border-style: dashed; }
 
 .error { color: var(--out); margin: 0; min-height: 1.2em; font-size: 0.9rem; }
 .error:empty { min-height: 0; }

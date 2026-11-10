@@ -11,6 +11,8 @@ Prototipo di un'app per gestire i propri risparmi e i soldi ricevuti dagli stipe
   Finché è aperto viene tolto dal saldo e conteggiato nel riquadro *Indebiti da rientrare*,
   insieme al *Totale con indebiti* (saldo + indebiti aperti). Con ✓ lo segni come rientrato
   e l'importo torna nel saldo.
+- **Trascura**: spuntando *Trascura questa transazione* nel modulo, il movimento resta
+  nella cronologia (in grigio, con l'etichetta *Trascurata*) ma non conta nei totali né nei grafici.
 - **Modifica**: tocca un movimento per cambiarne importo, descrizione, tipo, categoria o data.
 - **Categorie**: all'inizio non ce n'è nessuna; si creano dal pulsante *Categorie*
   (dove si possono anche rinominare ed eliminare) o direttamente dal modulo di un movimento.
