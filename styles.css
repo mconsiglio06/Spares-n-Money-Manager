@@ -233,3 +233,13 @@ body {
 
 .error { color: var(--out); margin: 0; min-height: 1.2em; font-size: 0.9rem; }
 .form-actions { display: grid; grid-template-columns: 1fr 1.4fr; gap: 12px; }
+
+.reset {
+  display: block;
+  margin: 20px auto 0;
+  appearance: none; border: 0; background: transparent;
+  color: var(--muted); font: inherit; font-size: 0.9rem;
+  text-decoration: underline; cursor: pointer; padding: 10px;
+}
+.reset:hover { color: var(--out); }
+.reset[hidden] { display: none; }

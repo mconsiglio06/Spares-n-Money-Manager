@@ -131,6 +131,14 @@ function render() {
   }));
 
   els.empty.hidden = transactions.length > 0;
+  $('reset-all').hidden = transactions.length === 0;
+}
+
+function resetAll() {
+  if (!confirm('Cancellare TUTTI i movimenti e azzerare il totale? L\'operazione non si può annullare.')) return;
+  transactions = [];
+  save();
+  render();
 }
 
 // ---------- Azioni ----------
@@ -230,6 +238,7 @@ els.form.addEventListener('submit', (e) => {
 
 $('open-in').addEventListener('click', () => openForm('in'));
 $('open-out').addEventListener('click', () => openForm('out'));
+$('reset-all').addEventListener('click', resetAll);
 $('cancel').addEventListener('click', () => els.dialog.close());
 // Chiudi toccando fuori dal pannello.
 els.dialog.addEventListener('click', (e) => { if (e.target === els.dialog) els.dialog.close(); });
