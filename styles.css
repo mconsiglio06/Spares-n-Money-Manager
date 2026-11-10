@@ -243,3 +243,35 @@ body {
 }
 .reset:hover { color: var(--out); }
 .reset[hidden] { display: none; }
+
+/* ---------- Layout desktop: due colonne, niente scorrimento della pagina ---------- */
+@media (min-width: 900px) and (min-height: 560px) {
+  html, body { height: 100%; }
+  body { overflow: hidden; }
+  .app {
+    max-width: 1180px;
+    height: 100vh;
+    padding: 28px 32px;
+    display: grid;
+    grid-template-columns: minmax(340px, 420px) 1fr;
+    grid-template-rows: auto auto 1fr;
+    column-gap: 32px;
+    grid-template-areas:
+      "top     history"
+      "balance history"
+      "actions history";
+  }
+  .top { grid-area: top; }
+  .balance-card { grid-area: balance; }
+  .actions { grid-area: actions; align-self: start; margin: 18px 0 0; grid-template-columns: 1fr; }
+  .history {
+    grid-area: history;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .history h2 { margin-top: 10px; }
+  /* Solo l'elenco scorre, se i movimenti sono tanti */
+  .list { flex: 0 1 auto; overflow-y: auto; }
+  .reset { flex: none; }
+}

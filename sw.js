@@ -1,5 +1,5 @@
 // Service worker minimale: rende l'app disponibile offline.
-const CACHE = 'spares-n-money-v2';
+const CACHE = 'spares-n-money-v3';
 const ASSETS = [
   './',
   './index.html',
