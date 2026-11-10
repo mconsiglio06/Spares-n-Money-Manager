@@ -41,6 +41,19 @@
       </div>
     </section>
 
+    <section class="debt-card" aria-live="polite">
+      <div>
+        <p class="label">Indebiti da rientrare</p>
+        <p class="debt-amount" id="debt-open">0,00 €</p>
+        <p class="hint" id="debt-count">Nessun indebito aperto</p>
+      </div>
+      <div class="debt-total">
+        <p class="label">Totale con indebiti</p>
+        <p class="debt-amount" id="debt-total">0,00 €</p>
+        <p class="hint">Saldo + indebiti da rientrare</p>
+      </div>
+    </section>
+
     <div class="actions">
       <button class="btn btn-in" id="open-in" type="button">
         <span aria-hidden="true">＋</span> Aggiungi
@@ -48,17 +61,50 @@
       <button class="btn btn-out" id="open-out" type="button">
         <span aria-hidden="true">−</span> Sottrai
       </button>
+      <button class="btn btn-debt" id="open-debt" type="button">
+        <span aria-hidden="true">↺</span> Indebito
+      </button>
     </div>
 
     <section class="history">
-      <h2>Movimenti</h2>
-      <ul id="list" class="list"></ul>
-      <p id="empty" class="empty">Nessun movimento ancora.<br>Inizia aggiungendo il tuo primo stipendio.</p>
-      <button type="button" class="reset" id="reset-all">Cancella tutti i dati</button>
+      <div class="tabs-row">
+        <div class="tabs" role="tablist">
+          <button type="button" role="tab" class="tab" id="tab-list" aria-selected="true" aria-controls="panel-list">Movimenti</button>
+          <button type="button" role="tab" class="tab" id="tab-charts" aria-selected="false" aria-controls="panel-charts">Grafici</button>
+        </div>
+        <button type="button" class="link-btn" id="open-cats">Categorie</button>
+      </div>
+
+      <div class="panel" id="panel-list" role="tabpanel" aria-labelledby="tab-list">
+        <ul id="list" class="list"></ul>
+        <p id="empty" class="empty">Nessun movimento ancora.<br>Inizia aggiungendo il tuo primo stipendio.</p>
+        <button type="button" class="reset" id="reset-all">Cancella tutti i dati</button>
+      </div>
+
+      <div class="panel" id="panel-charts" role="tabpanel" aria-labelledby="tab-charts" hidden>
+        <div class="chart-filter">
+          <label for="chart-period">Periodo</label>
+          <select id="chart-period"></select>
+        </div>
+        <div class="chart-stats">
+          <div><span>Speso nel periodo</span><strong id="chart-total">0,00 €</strong></div>
+          <div><span>Media mensile</span><strong id="chart-avg">0,00 €</strong></div>
+        </div>
+        <div class="chart-card">
+          <h3>Spese per mese</h3>
+          <div class="bars" id="chart-months"></div>
+          <p class="chart-note" id="chart-months-note"></p>
+        </div>
+        <div class="chart-card">
+          <h3>Spese per categoria</h3>
+          <div class="hbars" id="chart-cats"></div>
+        </div>
+        <div class="tooltip" id="tooltip" role="status" hidden></div>
+      </div>
     </section>
   </main>
 
-  <!-- Form aggiunta / spesa -->
+  <!-- Form movimento (aggiunta / spesa / indebito, nuovo o modifica) -->
   <dialog id="dialog" class="sheet">
     <form id="form" method="dialog" novalidate>
       <h3 id="form-title">Aggiungi denaro</h3>
@@ -69,11 +115,25 @@
                placeholder="0,00" autocomplete="off" required>
       </label>
 
+      <label class="field" id="kind-field">
+        <span>Tipo di entrata</span>
+        <select id="kind" name="kind"></select>
+      </label>
+
       <label class="field">
         <span id="desc-label">Descrizione <em>(facoltativa)</em></span>
         <input id="description" name="description" type="text" maxlength="80"
                placeholder="Es. Stipendio" autocomplete="off">
       </label>
+
+      <div class="field" id="category-field">
+        <label for="category">Categoria <em>(facoltativa)</em></label>
+        <select id="category" name="category"></select>
+        <div class="new-cat" id="new-cat-row" hidden>
+          <input id="new-cat" type="text" maxlength="30" placeholder="Nome nuova categoria" autocomplete="off">
+          <button type="button" class="btn btn-small" id="new-cat-add">Crea</button>
+        </div>
+      </div>
 
       <div class="row">
         <label class="field">
@@ -87,11 +147,32 @@
         </label>
       </div>
 
+      <label class="check" id="settled-field">
+        <input type="checkbox" id="settled"> Già rientrato nel saldo
+      </label>
+
       <p id="error" class="error" role="alert"></p>
 
       <div class="form-actions">
         <button type="button" class="btn btn-ghost" id="cancel">Annulla</button>
         <button type="submit" class="btn btn-in" id="submit">Salva</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Gestione categorie -->
+  <dialog id="cats-dialog" class="sheet">
+    <form id="cats-form" method="dialog" novalidate>
+      <h3>Categorie</h3>
+      <div class="new-cat">
+        <input id="cats-new" type="text" maxlength="30" placeholder="Nuova categoria (es. Casa)" autocomplete="off">
+        <button type="submit" class="btn btn-small" id="cats-add">Aggiungi</button>
+      </div>
+      <p id="cats-error" class="error" role="alert"></p>
+      <ul class="cats-list" id="cats-list"></ul>
+      <p class="empty small" id="cats-empty">Nessuna categoria. Creane una qui sopra o direttamente da un movimento.</p>
+      <div class="form-actions single">
+        <button type="button" class="btn btn-ghost" id="cats-close">Chiudi</button>
       </div>
     </form>
   </dialog>
